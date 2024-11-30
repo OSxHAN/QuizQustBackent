@@ -16,7 +16,7 @@ bot = AsyncTeleBot(BOT_TOKEN)
 
 firebase_config = json.loads(os.environ.get('FIREBASE_SERVICE_ACCOUNT'))
 cred = credentials.Certificate(firebase_config)
-firebase_admin.initialize_app(cred, {'storageBucket': 'quiz-quest-c95ed.appspot.com'})
+firebase_admin.initialize_app(cred, {'storageBucket': 'quiz-quest-c95ed.firebasestorage.app'})
 db = firestore.client()
 bucket = storage.bucket()
 
