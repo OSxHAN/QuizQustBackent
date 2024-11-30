@@ -122,7 +122,7 @@ async def start(message):
         keyboard = generate_start_keyboard()
         await bot.reply_to(message, welcome_message, reply_markup=keyboard)
     except Exception as e:
-        error_message = "Error. Please try again!"
+        error_message = f"Error: {str(e)}"
         await bot.reply_to(message, error_message)
         print(f"Error: {str(e)}")
 
