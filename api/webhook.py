@@ -126,6 +126,53 @@ async def start(message):
         await bot.reply_to(message, error_message)
         print(f"Error: {str(e)}")
 
+# /ozet komutu işleyici
+@bot.message_handler(commands=['ozet'])
+async def ozet(message):
+    user_id = str(message.from_user.id)
+    user_first_name = str(message.from_user.first_name)
+    
+    try:
+        user_ref = db.collection('users').document(user_id)
+        user_doc = user_ref.get()
+        
+        if not user_doc.exists:
+            not_found_message = (
+                f"Hi, {user_first_name}! 👋\n\n"
+                f"You need to start the bot first. Use /start command to begin.\n"
+            )
+            await bot.reply_to(message, not_found_message)
+            return
+        
+        user_data = user_doc.to_dict()
+        
+        # Kullanıcı verilerini al
+        balance = user_data.get('balance', 0)
+        mine_rate = user_data.get('mineRate', 0)
+        is_mining = user_data.get('isMining', False)
+        referrals = user_data.get('referrals', {})
+        referral_count = len(referrals) if referrals else 0
+        daily_claimed_day = user_data.get('daily', {}).get('claimedDay', 0)
+        is_premium = user_data.get('isPremium', False)
+        
+        # Özet mesajını oluştur
+        summary_message = (
+            f"📊 **Quiz Quest Summary** 📊\n\n"
+            f"👤 **User:** {user_first_name}\n"
+            f"{'⭐ Premium User' if is_premium else '👤 Regular User'}\n\n"
+            f"💰 **Balance:** {balance:.2f} coins\n"
+            f"⛏️ **Mining Rate:** {mine_rate:.4f} coins/sec\n"
+            f"{'🟢 Mining Active' if is_mining else '🔴 Mining Inactive'}\n\n"
+            f"👥 **Referrals:** {referral_count}\n"
+            f"📅 **Daily Streak:** {daily_claimed_day} days\n"
+        )
+        
+        await bot.reply_to(message, summary_message, parse_mode='Markdown')
+    except Exception as e:
+        error_message = f"Error: {str(e)}"
+        await bot.reply_to(message, error_message)
+        print(f"Error in ozet command: {str(e)}")
+
 # Sunucu işleyici
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
